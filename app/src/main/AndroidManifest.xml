@@ -24,6 +24,10 @@
         </activity>
 
         <receiver
+            android:name=".widget.RefreshWidgetReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".widget.HabitWidgetReceiver"
             android:exported="true">
             <intent-filter>
