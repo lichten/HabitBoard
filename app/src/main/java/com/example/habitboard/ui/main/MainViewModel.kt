@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habitboard.data.model.Habit
+import com.example.habitboard.data.model.HabitRecord
 import com.example.habitboard.data.repository.HabitRepository
 import com.example.habitboard.widget.HabitWidget
 import androidx.glance.appwidget.updateAll
@@ -16,7 +17,7 @@ import java.time.LocalDate
 
 data class MainUiState(
     val habits: List<Habit> = emptyList(),
-    val records: Map<Int, Boolean> = emptyMap(),
+    val recordsByHabitId: Map<Int, HabitRecord> = emptyMap(),
     val today: LocalDate = LocalDate.now()
 )
 
@@ -28,8 +29,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         repository.getHabits(),
         repository.getRecordsForDate(today)
     ) { habits, records ->
-        val recordMap = records.associate { it.habitId to it.isDone }
-        MainUiState(habits = habits, records = recordMap, today = today)
+        MainUiState(
+            habits = habits,
+            recordsByHabitId = records.associateBy { it.habitId },
+            today = today
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -40,6 +44,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository.toggleRecord(habitId, today, !currentDone)
             HabitWidget().updateAll(getApplication())
+        }
+    }
+
+    fun updateMemo(habitId: Int, memo: String?) {
+        viewModelScope.launch {
+            repository.updateMemo(habitId, today, memo)
         }
     }
 }

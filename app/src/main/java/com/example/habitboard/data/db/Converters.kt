@@ -2,6 +2,7 @@ package com.example.habitboard.data.db
 
 import androidx.room.TypeConverter
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class Converters {
     @TypeConverter
@@ -9,4 +10,10 @@ class Converters {
 
     @TypeConverter
     fun toLocalDate(value: String?): LocalDate? = value?.let { LocalDate.parse(it) }
+
+    @TypeConverter
+    fun fromLocalDateTime(dt: LocalDateTime?): String? = dt?.toString()
+
+    @TypeConverter
+    fun toLocalDateTime(value: String?): LocalDateTime? = value?.let { LocalDateTime.parse(it) }
 }

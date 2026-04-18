@@ -1,37 +1,44 @@
 package com.example.habitboard.ui.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onNavigateToManage: () -> Unit,
+    onNavigateToCalendar: () -> Unit,
     viewModel: MainViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dateStr = uiState.today.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
-    val doneCount = uiState.records.values.count { it }
+    val doneCount = uiState.recordsByHabitId.values.count { it.isDone }
     val totalCount = uiState.habits.size
+    var memoEditingHabitId by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("今日 $dateStr") },
                 actions = {
+                    IconButton(onClick = onNavigateToCalendar) {
+                        Icon(Icons.Default.CalendarMonth, contentDescription = "習慣の記録")
+                    }
                     IconButton(onClick = onNavigateToManage) {
                         Icon(Icons.Default.Settings, contentDescription = "習慣を管理")
                     }
@@ -72,16 +79,32 @@ fun MainScreen(
                     }
                 }
                 items(uiState.habits, key = { it.id }) { habit ->
-                    val isDone = uiState.records[habit.id] ?: false
+                    val record = uiState.recordsByHabitId[habit.id]
+                    val isDone = record?.isDone ?: false
                     HabitRow(
                         habitName = habit.name,
                         isDone = isDone,
-                        onToggle = { viewModel.toggle(habit.id, isDone) }
+                        completedAt = record?.completedAt,
+                        memo = record?.memo,
+                        onToggle = { viewModel.toggle(habit.id, isDone) },
+                        onMemoClick = { memoEditingHabitId = habit.id }
                     )
                 }
                 item { Spacer(modifier = Modifier.height(72.dp)) }
             }
         }
+    }
+
+    memoEditingHabitId?.let { habitId ->
+        val currentMemo = uiState.recordsByHabitId[habitId]?.memo ?: ""
+        MemoEditDialog(
+            initialMemo = currentMemo,
+            onConfirm = { memo ->
+                viewModel.updateMemo(habitId, memo.ifBlank { null })
+                memoEditingHabitId = null
+            },
+            onDismiss = { memoEditingHabitId = null }
+        )
     }
 }
 
@@ -89,8 +112,13 @@ fun MainScreen(
 fun HabitRow(
     habitName: String,
     isDone: Boolean,
-    onToggle: () -> Unit
+    completedAt: LocalDateTime?,
+    memo: String?,
+    onToggle: () -> Unit,
+    onMemoClick: () -> Unit
 ) {
+    val timeStr = completedAt?.format(DateTimeFormatter.ofPattern("HH:mm"))
+
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -98,11 +126,36 @@ fun HabitRow(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = habitName,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = habitName, style = MaterialTheme.typography.bodyLarge)
+                if (timeStr != null) {
+                    Text(
+                        text = "$timeStr に完了",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .clickable(onClick = onMemoClick)
+                        .padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "メモを編集",
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = memo ?: "メモを追加",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (memo != null) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
             Spacer(modifier = Modifier.width(12.dp))
             Button(
                 onClick = onToggle,
@@ -114,13 +167,39 @@ fun HabitRow(
             ) {
                 Text(
                     text = if (isDone) "✓ 完了" else "未完",
-                    color = if (isDone) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    }
+                    color = if (isDone) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
     }
+}
+
+@Composable
+private fun MemoEditDialog(
+    initialMemo: String,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var memo by remember { mutableStateOf(initialMemo) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("メモ") },
+        text = {
+            OutlinedTextField(
+                value = memo,
+                onValueChange = { memo = it },
+                label = { Text("内容") },
+                placeholder = { Text("例: 60.2kg") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(memo) }) { Text("保存") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("キャンセル") }
+        }
+    )
 }

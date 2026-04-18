@@ -7,11 +7,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.LocalContext
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.action.actionSendBroadcast
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.*
@@ -45,7 +44,6 @@ class HabitWidget : GlanceAppWidget() {
 
 @Composable
 private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>) {
-    val context = LocalContext.current
     val doneCount = recordMap.values.count { it }
     val totalCount = habits.size
 
@@ -84,11 +82,7 @@ private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>) {
                     fontSize = 14.sp,
                     color = ColorProvider(SubduedColor)
                 ),
-                modifier = GlanceModifier.clickable(
-                    actionSendBroadcast(
-                        android.content.Intent(context, RefreshWidgetReceiver::class.java)
-                    )
-                )
+                modifier = GlanceModifier.clickable(actionRunCallback<RefreshAction>())
             )
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
