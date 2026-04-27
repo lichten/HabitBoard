@@ -10,7 +10,6 @@ import androidx.glance.GlanceModifier
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.*
@@ -22,6 +21,8 @@ import com.example.habitboard.MainActivity
 import com.example.habitboard.data.model.Habit
 import com.example.habitboard.data.repository.HabitRepository
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 private val BgColor = Color(0xFF1C1B1F)
 private val OnBgColor = Color(0xFFE6E1E5)
@@ -35,15 +36,16 @@ class HabitWidget : GlanceAppWidget() {
         val habits = repository.getHabitsSync()
         val records = repository.getRecordsForDateSync(today)
         val recordMap = records.associate { it.habitId to it.isDone }
+        val lastUpdated = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
 
         provideContent {
-            WidgetContent(habits = habits, recordMap = recordMap)
+            WidgetContent(habits = habits, recordMap = recordMap, lastUpdated = lastUpdated)
         }
     }
 }
 
 @Composable
-private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>) {
+private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>, lastUpdated: String) {
     val doneCount = recordMap.values.count { it }
     val totalCount = habits.size
 
@@ -58,15 +60,27 @@ private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>) {
             modifier = GlanceModifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "今日の習慣",
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = ColorProvider(OnBgColor)
-                ),
-                modifier = GlanceModifier.defaultWeight()
-            )
+            Row(
+                modifier = GlanceModifier.defaultWeight(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "今日の習慣",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = ColorProvider(OnBgColor)
+                    )
+                )
+                Spacer(modifier = GlanceModifier.width(6.dp))
+                Text(
+                    text = "更新 $lastUpdated",
+                    style = TextStyle(
+                        fontSize = 10.sp,
+                        color = ColorProvider(SubduedColor)
+                    )
+                )
+            }
             Text(
                 text = "$doneCount / $totalCount",
                 style = TextStyle(
@@ -74,15 +88,6 @@ private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>) {
                     fontSize = 14.sp,
                     color = ColorProvider(PrimaryColor)
                 )
-            )
-            Spacer(modifier = GlanceModifier.width(8.dp))
-            Text(
-                text = "↻",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    color = ColorProvider(SubduedColor)
-                ),
-                modifier = GlanceModifier.clickable(actionRunCallback<RefreshAction>())
             )
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
