@@ -91,7 +91,7 @@ private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>, las
             )
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
-        habits.take(5).forEach { habit ->
+        habits.forEach { habit ->
             val isDone = recordMap[habit.id] ?: false
             Row(
                 modifier = GlanceModifier
