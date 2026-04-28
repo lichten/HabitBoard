@@ -15,10 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.habitboard.R
 import com.example.habitboard.data.model.Habit
 import com.example.habitboard.data.model.HabitRecord
 import com.example.habitboard.data.preferences.WeekStart
@@ -43,15 +46,15 @@ fun CalendarScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("習慣の記録") },
+                title = { Text(stringResource(R.string.calendar_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "設定")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_settings))
                     }
                 }
             )
@@ -113,14 +116,14 @@ private fun MonthNavigator(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = onPrevious, enabled = canGoPrevious) {
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "前の月")
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.cd_previous_month))
         }
         Text(
-            text = "${yearMonth.year}年${yearMonth.monthValue}月",
+            text = stringResource(R.string.calendar_year_month, yearMonth.year, yearMonth.monthValue),
             style = MaterialTheme.typography.titleMedium
         )
         IconButton(onClick = onNext, enabled = canGoNext) {
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "次の月")
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.cd_next_month))
         }
     }
 }
@@ -135,9 +138,9 @@ private fun CalendarGrid(
     onDateClick: (LocalDate) -> Unit
 ) {
     val dayHeaders = if (weekStart == WeekStart.SUNDAY) {
-        listOf("日", "月", "火", "水", "木", "金", "土")
+        stringArrayResource(R.array.calendar_day_headers_sun_first).toList()
     } else {
-        listOf("月", "火", "水", "木", "金", "土", "日")
+        stringArrayResource(R.array.calendar_day_headers_mon_first).toList()
     }
     val firstDayOffset = firstDayColumnIndex(yearMonth, weekStart)
     val daysInMonth = yearMonth.lengthOfMonth()
@@ -258,13 +261,13 @@ private fun DayDetailContent(
         Spacer(modifier = Modifier.height(12.dp))
         if (habits.isEmpty()) {
             Text(
-                text = "習慣が登録されていません",
+                text = stringResource(R.string.calendar_no_habits),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
             Text(
-                text = "達成: $doneCount / ${habits.size}",
+                text = stringResource(R.string.achievement_count, doneCount, habits.size),
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -285,7 +288,7 @@ private fun DayDetailContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (isDone) "✓" else "ー",
+                        text = if (isDone) stringResource(R.string.mark_done) else stringResource(R.string.mark_undone),
                         style = MaterialTheme.typography.bodyMedium,
                         color = if (isDone) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -301,7 +304,7 @@ private fun DayDetailContent(
                         )
                         if (timeStr != null) {
                             Text(
-                                text = "$timeStr に完了",
+                                text = stringResource(R.string.completed_at_time, timeStr),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

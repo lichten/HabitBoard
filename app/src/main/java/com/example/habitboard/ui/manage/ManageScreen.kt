@@ -11,8 +11,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.habitboard.R
 import com.example.habitboard.data.model.Habit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,10 +30,10 @@ fun ManageScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("習慣を管理") },
+                title = { Text(stringResource(R.string.manage_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -43,7 +45,7 @@ fun ManageScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            Text("新しい習慣を追加", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.manage_add_section), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -52,7 +54,7 @@ fun ManageScreen(
                 OutlinedTextField(
                     value = newHabitName,
                     onValueChange = { newHabitName = it },
-                    label = { Text("習慣名") },
+                    label = { Text(stringResource(R.string.habit_name_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
@@ -64,12 +66,12 @@ fun ManageScreen(
                     },
                     enabled = newHabitName.isNotBlank()
                 ) {
-                    Text("追加")
+                    Text(stringResource(R.string.action_add))
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-            Text("習慣一覧", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.manage_list_section), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -115,10 +117,10 @@ private fun HabitManageRow(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onEdit) {
-                Icon(Icons.Default.Edit, contentDescription = "編集")
+                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit))
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "削除")
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete))
             }
         }
     }
@@ -133,12 +135,12 @@ private fun EditHabitDialog(
     var name by remember(habit.id) { mutableStateOf(habit.name) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("習慣を編集") },
+        title = { Text(stringResource(R.string.edit_habit_dialog_title)) },
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("習慣名") },
+                label = { Text(stringResource(R.string.habit_name_label)) },
                 singleLine = true
             )
         },
@@ -147,11 +149,11 @@ private fun EditHabitDialog(
                 onClick = { onConfirm(name) },
                 enabled = name.isNotBlank()
             ) {
-                Text("保存")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("キャンセル") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
 }

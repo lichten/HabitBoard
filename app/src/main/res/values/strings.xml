@@ -1,3 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HabitBoard</string>
+
+    <!-- Common actions -->
+    <string name="action_save">保存</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_add">追加</string>
+
+    <!-- Common content descriptions -->
+    <string name="cd_back">戻る</string>
+    <string name="cd_settings">設定</string>
+
+    <!-- Common marks -->
+    <string name="mark_done">✓</string>
+    <string name="mark_undone">ー</string>
+
+    <!-- MainScreen -->
+    <string name="main_title">今日 %1$s</string>
+    <string name="achievement_count">達成: %1$d / %2$d</string>
+    <string name="main_no_habits">習慣がまだありません。\n右下の＋ボタンで追加しましょう！</string>
+    <string name="cd_calendar">習慣の記録</string>
+    <string name="cd_manage">習慣を管理</string>
+    <string name="cd_add_habit">習慣を追加</string>
+    <string name="completed_at_time">%1$s に完了</string>
+    <string name="cd_edit_memo">メモを編集</string>
+    <string name="memo_empty_hint">タップしてメモを残す</string>
+    <string name="button_done">✓ 完了</string>
+    <string name="button_not_done">未完</string>
+    <string name="memo_dialog_title">メモ</string>
+    <string name="memo_label">今日のメモ</string>
+    <string name="memo_placeholder">記録や感想を入力してください</string>
+
+    <!-- ManageScreen -->
+    <string name="manage_title">習慣を管理</string>
+    <string name="manage_add_section">新しい習慣を追加</string>
+    <string name="manage_list_section">習慣一覧</string>
+    <string name="habit_name_label">習慣名</string>
+    <string name="cd_edit">編集</string>
+    <string name="cd_delete">削除</string>
+    <string name="edit_habit_dialog_title">習慣を編集</string>
+
+    <!-- CalendarScreen -->
+    <string name="calendar_title">習慣の記録</string>
+    <string name="cd_previous_month">前の月</string>
+    <string name="cd_next_month">次の月</string>
+    <string name="calendar_year_month">%1$d年%2$d月</string>
+    <string name="calendar_no_habits">習慣が登録されていません</string>
+    <string-array name="calendar_day_headers_sun_first">
+        <item>日</item>
+        <item>月</item>
+        <item>火</item>
+        <item>水</item>
+        <item>木</item>
+        <item>金</item>
+        <item>土</item>
+    </string-array>
+    <string-array name="calendar_day_headers_mon_first">
+        <item>月</item>
+        <item>火</item>
+        <item>水</item>
+        <item>木</item>
+        <item>金</item>
+        <item>土</item>
+        <item>日</item>
+    </string-array>
+
+    <!-- SettingsScreen -->
+    <string name="settings_title">設定</string>
+    <string name="settings_week_start">週の始まり</string>
+    <string name="settings_week_start_sunday">日曜日</string>
+    <string name="settings_week_start_monday">月曜日</string>
+
+    <!-- Widget -->
+    <string name="widget_title">今日の習慣</string>
+    <string name="widget_last_updated">更新 %1$s</string>
+    <string name="widget_count">%1$d / %2$d</string>
+    <string name="widget_done_marker">✓ </string>
+    <string name="widget_undone_marker">ー </string>
 </resources>

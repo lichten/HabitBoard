@@ -13,8 +13,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.habitboard.R
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -34,27 +36,27 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("今日 $dateStr") },
+                title = { Text(stringResource(R.string.main_title, dateStr)) },
                 actions = {
                     IconButton(onClick = onNavigateToCalendar) {
-                        Icon(Icons.Default.CalendarMonth, contentDescription = "習慣の記録")
+                        Icon(Icons.Default.CalendarMonth, contentDescription = stringResource(R.string.cd_calendar))
                     }
                     IconButton(onClick = onNavigateToManage) {
-                        Icon(Icons.Default.Settings, contentDescription = "習慣を管理")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_manage))
                     }
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToManage) {
-                Icon(Icons.Default.Add, contentDescription = "習慣を追加")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_habit))
             }
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             if (totalCount > 0) {
                 Text(
-                    text = "達成: $doneCount / $totalCount",
+                    text = stringResource(R.string.achievement_count, doneCount, totalCount),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -71,7 +73,7 @@ fun MainScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "習慣がまだありません。\n右下の＋ボタンで追加しましょう！",
+                                text = stringResource(R.string.main_no_habits),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -130,7 +132,7 @@ fun HabitRow(
                 Text(text = habitName, style = MaterialTheme.typography.bodyLarge)
                 if (timeStr != null) {
                     Text(
-                        text = "$timeStr に完了",
+                        text = stringResource(R.string.completed_at_time, timeStr),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -143,13 +145,13 @@ fun HabitRow(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "メモを編集",
+                        contentDescription = stringResource(R.string.cd_edit_memo),
                         modifier = Modifier.size(12.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = memo ?: "メモを追加",
+                        text = memo ?: stringResource(R.string.memo_empty_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = if (memo != null) MaterialTheme.colorScheme.onSurface
                         else MaterialTheme.colorScheme.onSurfaceVariant
@@ -166,7 +168,8 @@ fun HabitRow(
                 }
             ) {
                 Text(
-                    text = if (isDone) "✓ 完了" else "未完",
+                    text = if (isDone) stringResource(R.string.button_done)
+                           else stringResource(R.string.button_not_done),
                     color = if (isDone) MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -184,22 +187,22 @@ private fun MemoEditDialog(
     var memo by remember { mutableStateOf(initialMemo) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("メモ") },
+        title = { Text(stringResource(R.string.memo_dialog_title)) },
         text = {
             OutlinedTextField(
                 value = memo,
                 onValueChange = { memo = it },
-                label = { Text("内容") },
-                placeholder = { Text("例: 60.2kg") },
+                label = { Text(stringResource(R.string.memo_label)) },
+                placeholder = { Text(stringResource(R.string.memo_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(memo) }) { Text("保存") }
+            TextButton(onClick = { onConfirm(memo) }) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("キャンセル") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
 }
