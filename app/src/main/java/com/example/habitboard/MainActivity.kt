@@ -10,9 +10,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.habitboard.ui.calendar.CalendarScreen
+import com.example.habitboard.ui.editday.EditDayScreen
 import com.example.habitboard.ui.main.MainScreen
 import com.example.habitboard.ui.manage.ManageScreen
 import com.example.habitboard.ui.settings.SettingsScreen
+import java.time.LocalDate
 import com.example.habitboard.ui.theme.HabitBoardTheme
 import androidx.glance.appwidget.updateAll
 import com.example.habitboard.widget.HabitWidget
@@ -44,11 +46,19 @@ class MainActivity : ComponentActivity() {
                     composable("calendar") {
                         CalendarScreen(
                             onBack = { navController.popBackStack() },
-                            onNavigateToSettings = { navController.navigate("settings") }
+                            onNavigateToSettings = { navController.navigate("settings") },
+                            onNavigateToEditDay = { date -> navController.navigate("edit_day/$date") }
                         )
                     }
                     composable("settings") {
                         SettingsScreen(onBack = { navController.popBackStack() })
+                    }
+                    composable("edit_day/{date}") { backStackEntry ->
+                        val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))
+                        EditDayScreen(
+                            date = date,
+                            onBack = { navController.popBackStack() }
+                        )
                     }
                 }
             }

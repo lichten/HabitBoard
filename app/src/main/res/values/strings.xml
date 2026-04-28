@@ -71,6 +71,10 @@
     <string name="settings_week_start_sunday">日曜日</string>
     <string name="settings_week_start_monday">月曜日</string>
 
+    <!-- EditDayScreen -->
+    <string name="cd_edit_day_records">この日の記録を編集</string>
+    <string name="edit_day_no_habits">習慣が登録されていません</string>
+
     <!-- Widget -->
     <string name="widget_title">今日の習慣</string>
     <string name="widget_last_updated">更新 %1$s</string>

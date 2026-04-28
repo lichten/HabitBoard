@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -36,6 +37,7 @@ import java.util.Locale
 fun CalendarScreen(
     onBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToEditDay: (LocalDate) -> Unit,
     viewModel: CalendarViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -93,10 +95,17 @@ fun CalendarScreen(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
+            val isPastDate = uiState.selectedDate.isBefore(today)
             DayDetailContent(
                 date = uiState.selectedDate,
                 habits = uiState.habits,
-                records = uiState.recordsByDate[uiState.selectedDate] ?: emptyList()
+                records = uiState.recordsByDate[uiState.selectedDate] ?: emptyList(),
+                onEditClick = if (isPastDate) {
+                    {
+                        showBottomSheet = false
+                        onNavigateToEditDay(uiState.selectedDate)
+                    }
+                } else null
             )
         }
     }
@@ -246,7 +255,8 @@ private fun DayCell(
 private fun DayDetailContent(
     date: LocalDate,
     habits: List<Habit>,
-    records: List<HabitRecord>
+    records: List<HabitRecord>,
+    onEditClick: (() -> Unit)? = null
 ) {
     val doneCount = records.count { it.isDone }
     val dateStr = date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd (E)", Locale.JAPANESE))
@@ -257,7 +267,24 @@ private fun DayDetailContent(
             .padding(horizontal = 16.dp)
             .padding(bottom = 32.dp)
     ) {
-        Text(text = dateStr, style = MaterialTheme.typography.titleMedium)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = dateStr,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
+            if (onEditClick != null) {
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.cd_edit_day_records)
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(12.dp))
         if (habits.isEmpty()) {
             Text(
