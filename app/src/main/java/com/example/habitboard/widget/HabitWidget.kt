@@ -24,10 +24,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-private val BgColor = Color(0xFF1C1B1F)
-private val OnBgColor = Color(0xFFE6E1E5)
-private val PrimaryColor = Color(0xFFD0BCFF)
-private val SubduedColor = Color(0xFF938F99)
+private val BgColor = Color(0xFFFDE182)
+private val OnBgColor = Color(0xFF1A0A00)
+private val PrimaryColor = Color(0xFF5C3310)
+private val SubduedColor = Color(0xFF7A5520)
 
 class HabitWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
