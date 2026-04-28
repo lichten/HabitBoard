@@ -2,6 +2,7 @@ package com.example.habitboard.data.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,7 +17,7 @@ class UserPreferences(
     var weekStart: WeekStart
         get() = WeekStart.valueOf(prefs.getString(KEY_WEEK_START, WeekStart.SUNDAY.name)!!)
         set(value) {
-            prefs.edit().putString(KEY_WEEK_START, value.name).apply()
+            prefs.edit { putString(KEY_WEEK_START, value.name) }
         }
 
     fun weekStartFlow(): Flow<WeekStart> =
