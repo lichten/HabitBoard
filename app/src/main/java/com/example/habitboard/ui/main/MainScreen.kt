@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter
 fun MainScreen(
     onNavigateToManage: () -> Unit,
     onNavigateToCalendar: () -> Unit,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dateStr = uiState.today.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
@@ -44,38 +44,38 @@ fun MainScreen(
                     IconButton(onClick = onNavigateToManage) {
                         Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_manage))
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToManage) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_habit))
             }
-        }
+        },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             if (totalCount > 0) {
                 Text(
                     text = stringResource(R.string.achievement_count, doneCount, totalCount),
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (uiState.habits.isEmpty()) {
                     item {
                         Box(
                             modifier = Modifier.fillMaxWidth().padding(top = 48.dp),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
                                 text = stringResource(R.string.main_no_habits),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -89,7 +89,7 @@ fun MainScreen(
                         completedAt = record?.completedAt,
                         memo = record?.memo,
                         onToggle = { viewModel.toggle(habit.id, isDone) },
-                        onMemoClick = { memoEditingHabitId = habit.id }
+                        onMemoClick = { memoEditingHabitId = habit.id },
                     )
                 }
                 item { Spacer(modifier = Modifier.height(72.dp)) }
@@ -105,7 +105,7 @@ fun MainScreen(
                 viewModel.updateMemo(habitId, memo.ifBlank { null })
                 memoEditingHabitId = null
             },
-            onDismiss = { memoEditingHabitId = null }
+            onDismiss = { memoEditingHabitId = null },
         )
     }
 }
@@ -117,16 +117,17 @@ fun HabitRow(
     completedAt: LocalDateTime?,
     memo: String?,
     onToggle: () -> Unit,
-    onMemoClick: () -> Unit
+    onMemoClick: () -> Unit,
 ) {
     val timeStr = completedAt?.format(DateTimeFormatter.ofPattern("HH:mm"))
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = habitName, style = MaterialTheme.typography.bodyLarge)
@@ -134,44 +135,58 @@ fun HabitRow(
                     Text(
                         text = stringResource(R.string.completed_at_time, timeStr),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 Row(
-                    modifier = Modifier
-                        .clickable(onClick = onMemoClick)
-                        .padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .clickable(onClick = onMemoClick)
+                            .padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(R.string.cd_edit_memo),
                         modifier = Modifier.size(12.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = memo ?: stringResource(R.string.memo_empty_hint),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (memo != null) MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.onSurfaceVariant
+                        color =
+                            if (memo != null) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
                     )
                 }
             }
             Spacer(modifier = Modifier.width(12.dp))
             Button(
                 onClick = onToggle,
-                colors = if (isDone) {
-                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                } else {
-                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                }
+                colors =
+                    if (isDone) {
+                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    } else {
+                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    },
             ) {
                 Text(
-                    text = if (isDone) stringResource(R.string.button_done)
-                           else stringResource(R.string.button_not_done),
-                    color = if (isDone) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.onSurfaceVariant
+                    text =
+                        if (isDone) {
+                            stringResource(R.string.button_done)
+                        } else {
+                            stringResource(R.string.button_not_done)
+                        },
+                    color =
+                        if (isDone) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                 )
             }
         }
@@ -182,7 +197,7 @@ fun HabitRow(
 private fun MemoEditDialog(
     initialMemo: String,
     onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var memo by remember { mutableStateOf(initialMemo) }
     AlertDialog(
@@ -195,7 +210,7 @@ private fun MemoEditDialog(
                 label = { Text(stringResource(R.string.memo_label)) },
                 placeholder = { Text(stringResource(R.string.memo_placeholder)) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         },
         confirmButton = {
@@ -203,6 +218,6 @@ private fun MemoEditDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-        }
+        },
     )
 }

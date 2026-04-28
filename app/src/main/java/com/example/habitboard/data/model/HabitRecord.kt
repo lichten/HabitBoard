@@ -10,5 +10,5 @@ data class HabitRecord(
     val date: LocalDate,
     val isDone: Boolean,
     val completedAt: LocalDateTime? = null,
-    val memo: String? = null
+    val memo: String? = null,
 )

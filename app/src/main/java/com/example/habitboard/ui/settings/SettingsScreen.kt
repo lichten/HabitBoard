@@ -19,7 +19,7 @@ import com.example.habitboard.data.preferences.WeekStart
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    viewModel: SettingsViewModel = viewModel()
+    viewModel: SettingsViewModel = viewModel(),
 ) {
     val weekStart by viewModel.weekStart.collectAsState()
 
@@ -31,27 +31,28 @@ fun SettingsScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp),
         ) {
             Text(stringResource(R.string.settings_week_start), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             WeekStartOption(
                 label = stringResource(R.string.settings_week_start_sunday),
                 selected = weekStart == WeekStart.SUNDAY,
-                onClick = { viewModel.setWeekStart(WeekStart.SUNDAY) }
+                onClick = { viewModel.setWeekStart(WeekStart.SUNDAY) },
             )
             WeekStartOption(
                 label = stringResource(R.string.settings_week_start_monday),
                 selected = weekStart == WeekStart.MONDAY,
-                onClick = { viewModel.setWeekStart(WeekStart.MONDAY) }
+                onClick = { viewModel.setWeekStart(WeekStart.MONDAY) },
             )
         }
     }
@@ -61,11 +62,11 @@ fun SettingsScreen(
 private fun WeekStartOption(
     label: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = onClick)
         Spacer(modifier = Modifier.width(8.dp))

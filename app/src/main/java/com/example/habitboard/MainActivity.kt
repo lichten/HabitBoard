@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,11 +15,10 @@ import com.example.habitboard.ui.editday.EditDayScreen
 import com.example.habitboard.ui.main.MainScreen
 import com.example.habitboard.ui.manage.ManageScreen
 import com.example.habitboard.ui.settings.SettingsScreen
-import java.time.LocalDate
 import com.example.habitboard.ui.theme.HabitBoardTheme
-import androidx.glance.appwidget.updateAll
 import com.example.habitboard.widget.HabitWidget
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     override fun onStop() {
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     composable("main") {
                         MainScreen(
                             onNavigateToManage = { navController.navigate("manage") },
-                            onNavigateToCalendar = { navController.navigate("calendar") }
+                            onNavigateToCalendar = { navController.navigate("calendar") },
                         )
                     }
                     composable("manage") {
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         CalendarScreen(
                             onBack = { navController.popBackStack() },
                             onNavigateToSettings = { navController.navigate("settings") },
-                            onNavigateToEditDay = { date -> navController.navigate("edit_day/$date") }
+                            onNavigateToEditDay = { date -> navController.navigate("edit_day/$date") },
                         )
                     }
                     composable("settings") {
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                         val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))
                         EditDayScreen(
                             date = date,
-                            onBack = { navController.popBackStack() }
+                            onBack = { navController.popBackStack() },
                         )
                     }
                 }

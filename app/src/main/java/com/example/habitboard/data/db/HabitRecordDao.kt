@@ -14,7 +14,10 @@ interface HabitRecordDao {
     suspend fun getRecordsForDateSync(date: LocalDate): List<HabitRecord>
 
     @Query("SELECT * FROM habit_records WHERE date >= :startDate AND date <= :endDate")
-    fun getRecordsForDateRange(startDate: LocalDate, endDate: LocalDate): Flow<List<HabitRecord>>
+    fun getRecordsForDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): Flow<List<HabitRecord>>
 
     @Upsert
     suspend fun upsert(record: HabitRecord)

@@ -21,7 +21,7 @@ import com.example.habitboard.data.model.Habit
 @Composable
 fun ManageScreen(
     onBack: () -> Unit,
-    viewModel: ManageViewModel = viewModel()
+    viewModel: ManageViewModel = viewModel(),
 ) {
     val habits by viewModel.habits.collectAsState()
     var newHabitName by remember { mutableStateOf("") }
@@ -35,28 +35,29 @@ fun ManageScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp),
         ) {
             Text(stringResource(R.string.manage_add_section), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedTextField(
                     value = newHabitName,
                     onValueChange = { newHabitName = it },
                     label = { Text(stringResource(R.string.habit_name_label)) },
                     modifier = Modifier.weight(1f),
-                    singleLine = true
+                    singleLine = true,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
@@ -64,7 +65,7 @@ fun ManageScreen(
                         viewModel.addHabit(newHabitName)
                         newHabitName = ""
                     },
-                    enabled = newHabitName.isNotBlank()
+                    enabled = newHabitName.isNotBlank(),
                 ) {
                     Text(stringResource(R.string.action_add))
                 }
@@ -79,7 +80,7 @@ fun ManageScreen(
                     HabitManageRow(
                         habit = habit,
                         onEdit = { editingHabit = habit },
-                        onDelete = { viewModel.deleteHabit(habit) }
+                        onDelete = { viewModel.deleteHabit(habit) },
                     )
                 }
             }
@@ -93,7 +94,7 @@ fun ManageScreen(
                 viewModel.updateHabit(habit, newName)
                 editingHabit = null
             },
-            onDismiss = { editingHabit = null }
+            onDismiss = { editingHabit = null },
         )
     }
 }
@@ -102,19 +103,20 @@ fun ManageScreen(
 private fun HabitManageRow(
     habit: Habit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = habit.name,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             IconButton(onClick = onEdit) {
                 Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit))
@@ -130,7 +132,7 @@ private fun HabitManageRow(
 private fun EditHabitDialog(
     habit: Habit,
     onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     var name by remember(habit.id) { mutableStateOf(habit.name) }
     AlertDialog(
@@ -141,19 +143,19 @@ private fun EditHabitDialog(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(stringResource(R.string.habit_name_label)) },
-                singleLine = true
+                singleLine = true,
             )
         },
         confirmButton = {
             TextButton(
                 onClick = { onConfirm(name) },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
             ) {
                 Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-        }
+        },
     )
 }

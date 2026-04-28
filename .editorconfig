@@ -1,0 +1,19 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.kt]
+# @Composable functions conventionally use PascalCase, which conflicts
+# with the standard camelCase rule. Suppress until the Compose ruleset
+# (io.nlopez.compose.rules) is introduced.
+ktlint_standard_function-naming = disabled
+
+# Wildcard imports are idiomatic in Compose (material3, foundation.layout,
+# runtime, glance.layout, etc.) and expanding them adds noise without value.
+ktlint_standard_no-wildcard-imports = disabled

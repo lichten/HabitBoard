@@ -32,7 +32,10 @@ private val PrimaryColor = Color(0xFF5C3310)
 private val SubduedColor = Color(0xFF7A5520)
 
 class HabitWidget : GlanceAppWidget() {
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun provideGlance(
+        context: Context,
+        id: GlanceId,
+    ) {
         val repository = HabitRepository(context)
         val today = LocalDate.now()
         val habits = repository.getHabitsSync()
@@ -47,75 +50,90 @@ class HabitWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun WidgetContent(habits: List<Habit>, recordMap: Map<Int, Boolean>, lastUpdated: String) {
+private fun WidgetContent(
+    habits: List<Habit>,
+    recordMap: Map<Int, Boolean>,
+    lastUpdated: String,
+) {
     val context = LocalContext.current
     val doneCount = recordMap.values.count { it }
     val totalCount = habits.size
 
     Column(
-        modifier = GlanceModifier
-            .fillMaxSize()
-            .background(BgColor)
-            .clickable(actionStartActivity<MainActivity>())
-            .padding(12.dp)
+        modifier =
+            GlanceModifier
+                .fillMaxSize()
+                .background(BgColor)
+                .clickable(actionStartActivity<MainActivity>())
+                .padding(12.dp),
     ) {
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier = GlanceModifier.defaultWeight(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = context.getString(R.string.widget_title),
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = ColorProvider(OnBgColor)
-                    )
+                    style =
+                        TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = ColorProvider(OnBgColor),
+                        ),
                 )
                 Spacer(modifier = GlanceModifier.width(6.dp))
                 Text(
                     text = context.getString(R.string.widget_last_updated, lastUpdated),
-                    style = TextStyle(
-                        fontSize = 10.sp,
-                        color = ColorProvider(SubduedColor)
-                    )
+                    style =
+                        TextStyle(
+                            fontSize = 10.sp,
+                            color = ColorProvider(SubduedColor),
+                        ),
                 )
             }
             Text(
                 text = context.getString(R.string.widget_count, doneCount, totalCount),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = ColorProvider(PrimaryColor)
-                )
+                style =
+                    TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = ColorProvider(PrimaryColor),
+                    ),
             )
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         habits.forEach { habit ->
             val isDone = recordMap[habit.id] ?: false
             Row(
-                modifier = GlanceModifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    GlanceModifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = if (isDone) context.getString(R.string.widget_done_marker)
-                           else context.getString(R.string.widget_undone_marker),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = ColorProvider(if (isDone) PrimaryColor else SubduedColor)
-                    )
+                    text =
+                        if (isDone) {
+                            context.getString(R.string.widget_done_marker)
+                        } else {
+                            context.getString(R.string.widget_undone_marker)
+                        },
+                    style =
+                        TextStyle(
+                            fontSize = 12.sp,
+                            color = ColorProvider(if (isDone) PrimaryColor else SubduedColor),
+                        ),
                 )
                 Text(
                     text = habit.name,
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = ColorProvider(if (isDone) OnBgColor else SubduedColor)
-                    )
+                    style =
+                        TextStyle(
+                            fontSize = 12.sp,
+                            color = ColorProvider(if (isDone) OnBgColor else SubduedColor),
+                        ),
                 )
             }
         }

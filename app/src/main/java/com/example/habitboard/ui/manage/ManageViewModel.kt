@@ -1,26 +1,30 @@
 package com.example.habitboard.ui.manage
 
 import android.app.Application
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habitboard.data.model.Habit
 import com.example.habitboard.data.repository.HabitRepository
-import androidx.glance.appwidget.updateAll
 import com.example.habitboard.widget.HabitWidget
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class ManageViewModel(application: Application) : AndroidViewModel(application) {
+class ManageViewModel(
+    application: Application,
+) : AndroidViewModel(application) {
     private val repository = HabitRepository(application)
 
-    val habits: StateFlow<List<Habit>> = repository.getHabits()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    val habits: StateFlow<List<Habit>> =
+        repository
+            .getHabits()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList(),
+            )
 
     fun addHabit(name: String) {
         if (name.isBlank()) return
@@ -31,7 +35,10 @@ class ManageViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun updateHabit(habit: Habit, newName: String) {
+    fun updateHabit(
+        habit: Habit,
+        newName: String,
+    ) {
         if (newName.isBlank()) return
         viewModelScope.launch {
             repository.updateHabit(habit.copy(name = newName.trim()))

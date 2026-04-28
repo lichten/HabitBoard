@@ -27,7 +27,6 @@ import com.example.habitboard.data.model.Habit
 import com.example.habitboard.data.model.HabitRecord
 import com.example.habitboard.data.preferences.WeekStart
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -38,7 +37,7 @@ fun CalendarScreen(
     onBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToEditDay: (LocalDate) -> Unit,
-    viewModel: CalendarViewModel = viewModel()
+    viewModel: CalendarViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -58,22 +57,23 @@ fun CalendarScreen(
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_settings))
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 12.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 12.dp),
         ) {
             MonthNavigator(
                 yearMonth = uiState.yearMonth,
                 canGoPrevious = !uiState.yearMonth.minusMonths(1).isBefore(viewModel.earliestMonth),
                 canGoNext = uiState.yearMonth.isBefore(YearMonth.now()),
                 onPrevious = viewModel::navigateToPreviousMonth,
-                onNext = viewModel::navigateToNextMonth
+                onNext = viewModel::navigateToNextMonth,
             )
             Spacer(modifier = Modifier.height(8.dp))
             CalendarGrid(
@@ -85,7 +85,7 @@ fun CalendarScreen(
                 onDateClick = { date ->
                     viewModel.selectDate(date)
                     showBottomSheet = true
-                }
+                },
             )
         }
     }
@@ -93,19 +93,22 @@ fun CalendarScreen(
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
         ) {
             val isPastDate = uiState.selectedDate.isBefore(today)
             DayDetailContent(
                 date = uiState.selectedDate,
                 habits = uiState.habits,
                 records = uiState.recordsByDate[uiState.selectedDate] ?: emptyList(),
-                onEditClick = if (isPastDate) {
-                    {
-                        showBottomSheet = false
-                        onNavigateToEditDay(uiState.selectedDate)
-                    }
-                } else null
+                onEditClick =
+                    if (isPastDate) {
+                        {
+                            showBottomSheet = false
+                            onNavigateToEditDay(uiState.selectedDate)
+                        }
+                    } else {
+                        null
+                    },
             )
         }
     }
@@ -117,19 +120,19 @@ private fun MonthNavigator(
     canGoPrevious: Boolean,
     canGoNext: Boolean,
     onPrevious: () -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         IconButton(onClick = onPrevious, enabled = canGoPrevious) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.cd_previous_month))
         }
         Text(
             text = stringResource(R.string.calendar_year_month, yearMonth.year, yearMonth.monthValue),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
         )
         IconButton(onClick = onNext, enabled = canGoNext) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.cd_next_month))
@@ -144,13 +147,14 @@ private fun CalendarGrid(
     recordsByDate: Map<LocalDate, List<HabitRecord>>,
     weekStart: WeekStart,
     today: LocalDate,
-    onDateClick: (LocalDate) -> Unit
+    onDateClick: (LocalDate) -> Unit,
 ) {
-    val dayHeaders = if (weekStart == WeekStart.SUNDAY) {
-        stringArrayResource(R.array.calendar_day_headers_sun_first).toList()
-    } else {
-        stringArrayResource(R.array.calendar_day_headers_mon_first).toList()
-    }
+    val dayHeaders =
+        if (weekStart == WeekStart.SUNDAY) {
+            stringArrayResource(R.array.calendar_day_headers_sun_first).toList()
+        } else {
+            stringArrayResource(R.array.calendar_day_headers_mon_first).toList()
+        }
     val firstDayOffset = firstDayColumnIndex(yearMonth, weekStart)
     val daysInMonth = yearMonth.lengthOfMonth()
     val totalCells = firstDayOffset + daysInMonth
@@ -164,7 +168,7 @@ private fun CalendarGrid(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -184,7 +188,7 @@ private fun CalendarGrid(
                             isToday = date == today,
                             isFuture = date.isAfter(today),
                             onClick = { onDateClick(date) },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
                         )
                     }
                 }
@@ -193,7 +197,10 @@ private fun CalendarGrid(
     }
 }
 
-private fun firstDayColumnIndex(yearMonth: YearMonth, weekStart: WeekStart): Int {
+private fun firstDayColumnIndex(
+    yearMonth: YearMonth,
+    weekStart: WeekStart,
+): Int {
     val value = yearMonth.atDay(1).dayOfWeek.value
     return if (weekStart == WeekStart.SUNDAY) value % 7 else (value - 1) % 7
 }
@@ -208,45 +215,47 @@ private fun DayCell(
     isToday: Boolean,
     isFuture: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val doneCount = records.count { it.isDone }
     val totalCount = habits.size
-    val cellState = when {
-        isFuture || totalCount == 0 -> CellState.NONE
-        doneCount == totalCount -> CellState.FULL
-        doneCount > 0 -> CellState.PARTIAL
-        else -> CellState.NONE
-    }
+    val cellState =
+        when {
+            isFuture || totalCount == 0 -> CellState.NONE
+            doneCount == totalCount -> CellState.FULL
+            doneCount > 0 -> CellState.PARTIAL
+            else -> CellState.NONE
+        }
 
     val primary = MaterialTheme.colorScheme.primary
     val onPrimary = MaterialTheme.colorScheme.onPrimary
     val onSurface = MaterialTheme.colorScheme.onSurface
 
     Box(
-        modifier = modifier
-            .aspectRatio(1f)
-            .padding(2.dp)
-            .clip(CircleShape)
-            .then(
-                when (cellState) {
-                    CellState.FULL -> Modifier.background(primary)
-                    CellState.PARTIAL -> Modifier.border(1.5.dp, primary, CircleShape)
-                    CellState.NONE -> Modifier
-                }
-            )
-            .clickable(enabled = !isFuture, onClick = onClick),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .aspectRatio(1f)
+                .padding(2.dp)
+                .clip(CircleShape)
+                .then(
+                    when (cellState) {
+                        CellState.FULL -> Modifier.background(primary)
+                        CellState.PARTIAL -> Modifier.border(1.5.dp, primary, CircleShape)
+                        CellState.NONE -> Modifier
+                    },
+                ).clickable(enabled = !isFuture, onClick = onClick),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = date.dayOfMonth.toString(),
             style = MaterialTheme.typography.bodySmall,
             textDecoration = if (isToday) TextDecoration.Underline else TextDecoration.None,
-            color = when {
-                cellState == CellState.FULL -> onPrimary
-                isFuture -> onSurface.copy(alpha = 0.3f)
-                else -> onSurface
-            }
+            color =
+                when {
+                    cellState == CellState.FULL -> onPrimary
+                    isFuture -> onSurface.copy(alpha = 0.3f)
+                    else -> onSurface
+                },
         )
     }
 }
@@ -256,31 +265,32 @@ private fun DayDetailContent(
     date: LocalDate,
     habits: List<Habit>,
     records: List<HabitRecord>,
-    onEditClick: (() -> Unit)? = null
+    onEditClick: (() -> Unit)? = null,
 ) {
     val doneCount = records.count { it.isDone }
     val dateStr = date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd (E)", Locale.JAPANESE))
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 32.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 32.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = dateStr,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             if (onEditClick != null) {
                 IconButton(onClick = onEditClick) {
                     Icon(
                         Icons.Default.Edit,
-                        contentDescription = stringResource(R.string.cd_edit_day_records)
+                        contentDescription = stringResource(R.string.cd_edit_day_records),
                     )
                 }
             }
@@ -290,50 +300,61 @@ private fun DayDetailContent(
             Text(
                 text = stringResource(R.string.calendar_no_habits),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else {
             Text(
                 text = stringResource(R.string.achievement_count, doneCount, habits.size),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(4.dp))
             LinearProgressIndicator(
                 progress = { doneCount.toFloat() / habits.size },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(12.dp))
             habits.forEach { habit ->
                 val record = records.find { it.habitId == habit.id }
                 val isDone = record?.isDone ?: false
-                val timeStr = record?.completedAt
-                    ?.format(DateTimeFormatter.ofPattern("HH:mm"))
+                val timeStr =
+                    record
+                        ?.completedAt
+                        ?.format(DateTimeFormatter.ofPattern("HH:mm"))
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = if (isDone) stringResource(R.string.mark_done) else stringResource(R.string.mark_undone),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (isDone) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.width(24.dp)
+                        color =
+                            if (isDone) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                        modifier = Modifier.width(24.dp),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
                             text = habit.name,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = if (isDone) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.onSurfaceVariant
+                            color =
+                                if (isDone) {
+                                    MaterialTheme.colorScheme.onSurface
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
                         )
                         if (timeStr != null) {
                             Text(
                                 text = stringResource(R.string.completed_at_time, timeStr),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         val memo = record?.memo
@@ -341,7 +362,7 @@ private fun DayDetailContent(
                             Text(
                                 text = memo,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }

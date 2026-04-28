@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
+class SettingsViewModel(
+    application: Application,
+) : AndroidViewModel(application) {
     private val userPrefs = UserPreferences(application)
 
     private val _weekStart = MutableStateFlow(userPrefs.weekStart)

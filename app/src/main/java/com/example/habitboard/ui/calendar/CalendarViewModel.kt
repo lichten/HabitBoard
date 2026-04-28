@@ -18,57 +18,59 @@ data class CalendarUiState(
     val habits: List<Habit> = emptyList(),
     val recordsByDate: Map<LocalDate, List<HabitRecord>> = emptyMap(),
     val selectedDate: LocalDate = LocalDate.now(),
-    val weekStart: WeekStart = WeekStart.SUNDAY
+    val weekStart: WeekStart = WeekStart.SUNDAY,
 )
 
-class CalendarViewModel(application: Application) : AndroidViewModel(application) {
+class CalendarViewModel(
+    application: Application,
+) : AndroidViewModel(application) {
     private val repository = HabitRepository(application)
     private val userPrefs = UserPreferences(application)
 
-    private val _yearMonth = MutableStateFlow(YearMonth.now())
-    private val _selectedDate = MutableStateFlow(LocalDate.now())
+    private val yearMonthFlow = MutableStateFlow(YearMonth.now())
+    private val selectedDateFlow = MutableStateFlow(LocalDate.now())
 
     val earliestMonth: YearMonth = YearMonth.now().minusMonths(11)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<CalendarUiState> = combine(
-        _yearMonth,
-        userPrefs.weekStartFlow()
-    ) { yearMonth, weekStart -> yearMonth to weekStart }
-        .flatMapLatest { (yearMonth, weekStart) ->
-            val startDate = yearMonth.atDay(1)
-            val endDate = yearMonth.atEndOfMonth()
-            combine(
-                repository.getHabits(),
-                repository.getRecordsForDateRange(startDate, endDate),
-                _selectedDate
-            ) { habits, records, selectedDate ->
-                CalendarUiState(
-                    yearMonth = yearMonth,
-                    habits = habits,
-                    recordsByDate = records.groupBy { it.date },
-                    selectedDate = selectedDate,
-                    weekStart = weekStart
-                )
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = CalendarUiState()
-        )
+    val uiState: StateFlow<CalendarUiState> =
+        combine(
+            yearMonthFlow,
+            userPrefs.weekStartFlow(),
+        ) { yearMonth, weekStart -> yearMonth to weekStart }
+            .flatMapLatest { (yearMonth, weekStart) ->
+                val startDate = yearMonth.atDay(1)
+                val endDate = yearMonth.atEndOfMonth()
+                combine(
+                    repository.getHabits(),
+                    repository.getRecordsForDateRange(startDate, endDate),
+                    selectedDateFlow,
+                ) { habits, records, selectedDate ->
+                    CalendarUiState(
+                        yearMonth = yearMonth,
+                        habits = habits,
+                        recordsByDate = records.groupBy { it.date },
+                        selectedDate = selectedDate,
+                        weekStart = weekStart,
+                    )
+                }
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = CalendarUiState(),
+            )
 
     fun selectDate(date: LocalDate) {
-        _selectedDate.value = date
+        selectedDateFlow.value = date
     }
 
     fun navigateToPreviousMonth() {
-        val prev = _yearMonth.value.minusMonths(1)
-        if (!prev.isBefore(earliestMonth)) _yearMonth.value = prev
+        val prev = yearMonthFlow.value.minusMonths(1)
+        if (!prev.isBefore(earliestMonth)) yearMonthFlow.value = prev
     }
 
     fun navigateToNextMonth() {
-        val next = _yearMonth.value.plusMonths(1)
-        if (!next.isAfter(YearMonth.now())) _yearMonth.value = next
+        val next = yearMonthFlow.value.plusMonths(1)
+        if (!next.isAfter(YearMonth.now())) yearMonthFlow.value = next
     }
 }
