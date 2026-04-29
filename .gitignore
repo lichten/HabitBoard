@@ -1,5 +1,8 @@
 ktlint
 *.iml
+*.jks
+*.keystore
+keystore.properties
 .gradle
 /local.properties
 .idea/
